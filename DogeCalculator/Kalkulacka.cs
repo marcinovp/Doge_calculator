@@ -24,8 +24,9 @@ namespace DogeCalculator
 
         private void computeButton_Click(object sender, EventArgs e)
         {
-            if (wallet.Day == 0)
-                wallet.BuyMiner(0, long.Parse(startMinerBox.Text));
+            long startingMinerPerDay = long.Parse(startMinerBox.Text);
+            if (wallet.Day == 0 && startingMinerPerDay > 0)
+                wallet.BuyMiner(0, startingMinerPerDay);
 
             for (int i = 0; i < int.Parse(leapBox.Text); i++)
             {
