@@ -202,7 +202,7 @@
             this.Controls.Add(this.daysCountBox);
             this.Controls.Add(this.label1);
             this.Name = "Broker";
-            this.Text = "Form1";
+            this.Text = "Broker";
             this.ResumeLayout(false);
             this.PerformLayout();
 

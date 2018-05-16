@@ -388,7 +388,7 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.computeButton);
             this.Name = "Kalkulacka";
-            this.Text = "Form1";
+            this.Text = "Doge Calculator";
             this.ResumeLayout(false);
             this.PerformLayout();
 
