@@ -31,9 +31,9 @@ namespace Penazenka
 
             Day++;
 
-            BuyMiners(minerTierToBuy);
-
             RemoveOverdueMiners();
+
+            BuyMiners(minerTierToBuy);
         }
 
         public void Withdraw(long amount)
