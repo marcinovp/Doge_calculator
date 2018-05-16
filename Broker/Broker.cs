@@ -22,8 +22,9 @@ namespace Broker
         private int[] bestSchema;
         private int daysAmount;
         private int iterationCounter;
+        private int startingMinerPerDay;
 
-        private void StartButton_Click(object sender, EventArgs e)
+        private async void StartButton_Click(object sender, EventArgs e)
         {
             var watch = System.Diagnostics.Stopwatch.StartNew();
 
@@ -33,23 +34,26 @@ namespace Broker
             int miner3Day = int.MaxValue;
             int miner4Day = int.MaxValue;
 
-            for (int i = daysAmount + 1; i > 0; i--)
+            await Task.Run(() =>
             {
-                miner2Day = i;
-
-                for (int j = daysAmount + 1; j >= i; j--)
+                for (int i = daysAmount + 1; i > 0; i--)
                 {
-                    miner3Day = j;
+                    miner2Day = i;
 
-                    for (int k = daysAmount + 1; k >= j; k--)
+                    for (int j = daysAmount + 1; j >= i; j--)
                     {
-                        miner4Day = k;
-                        iterationCounter++;
+                        miner3Day = j;
 
-                        SimulateStrategy(miner2Day, miner3Day, miner4Day);
+                        for (int k = daysAmount + 1; k >= j; k--)
+                        {
+                            miner4Day = k;
+                            iterationCounter++;
+
+                            SimulateStrategy(miner2Day, miner3Day, miner4Day);
+                        }
                     }
                 }
-            }
+            });
 
             StatusLabel.Text = "Hotovo";
             ShowStats();
@@ -63,7 +67,7 @@ namespace Broker
         {
             Wallet wallet = new Wallet();
             if (wallet.Day == 0)
-                wallet.BuyMiner(0, long.Parse(startMinerBox.Text));
+                wallet.BuyMiner(0, startingMinerPerDay);
 
             for (int i = 0; i <= daysAmount + 30; i++)
             {
@@ -97,13 +101,14 @@ namespace Broker
                 bestSchema[1] = miner3Day;
                 bestSchema[2] = miner4Day;
 
-                ShowStats();
+                //ShowStats();
             }
         }
 
         private void Reset()
         {
             daysAmount = int.Parse(daysCountBox.Text);
+            startingMinerPerDay = int.Parse(startMinerBox.Text);
             bestSchema = new int[] { -1, -1, -1};
             bestEarning = 0;
             iterationCounter = 0;
