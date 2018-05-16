@@ -22,6 +22,7 @@ namespace Broker
         private int[] bestSchema;
         private int daysAmount;
         private int iterationCounter;
+        private long startingMinerPerDay;
 
         private void StartButton_Click(object sender, EventArgs e)
         {
@@ -63,9 +64,10 @@ namespace Broker
         {
             Wallet wallet = new Wallet();
             if (wallet.Day == 0)
-                wallet.BuyMiner(0, long.Parse(startMinerBox.Text));
+                wallet.BuyMiner(0, startingMinerPerDay);
 
-            for (int i = 0; i <= daysAmount + 30; i++)
+            //for (int i = 0; i <= daysAmount + 30; i++)
+            while (wallet.Day <= daysAmount + 30)
             {
                 int minerTier = -1;
                 if (wallet.Day > daysAmount)
@@ -104,6 +106,7 @@ namespace Broker
         private void Reset()
         {
             daysAmount = int.Parse(daysCountBox.Text);
+            startingMinerPerDay = long.Parse(startMinerBox.Text);
             bestSchema = new int[] { -1, -1, -1};
             bestEarning = 0;
             iterationCounter = 0;
