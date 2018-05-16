@@ -49,7 +49,11 @@ namespace Broker
                             miner4Day = k;
                             iterationCounter++;
 
-                            SimulateStrategy(miner2Day, miner3Day, miner4Day);
+                            bool successfulStrategy = SimulateStrategy(miner2Day, miner3Day, miner4Day);
+                            if (!successfulStrategy)
+                            {
+                                break;
+                            }
                         }
                     }
                 }
@@ -63,29 +67,92 @@ namespace Broker
             durationLabel.Text = elapsedMs.ToString();
         }
 
-        private void SimulateStrategy(int miner2Day, int miner3Day, int miner4Day)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="miner2Day">Day, when to start buying tier 2 miner</param>
+        /// <param name="miner3Day">Day, when to start buying tier 3 miner</param>
+        /// <param name="miner4Day">Day, when to start buying tier 4 miner</param>
+        /// <returns>If this strategy is successful</returns>
+        private bool SimulateStrategy(int miner2Day, int miner3Day, int miner4Day)
         {
             Wallet wallet = new Wallet();
+            int highersMinerTier = 0;
+
+            //if the highest tier miner is never bought (strategy tries to buy it too early) it is not a successful strategy
+            //starting with tier 0, default set to true
+            bool wasHighestTierBought = true;
+            int nakupov = 0;
+
             if (wallet.Day == 0)
                 wallet.BuyMiner(0, startingMinerPerDay);
 
-            for (int i = 0; i <= daysAmount + 30; i++)
+            while (wallet.Day <= daysAmount + 30)
             {
                 int minerTier = -1;
                 if (wallet.Day > daysAmount)
                     minerTier = -1;
                 else if (wallet.Day >= miner4Day)
+                {
                     minerTier = 3;
+
+                    if (highersMinerTier != minerTier)
+                        wasHighestTierBought = false;
+
+                    highersMinerTier = minerTier;
+                }
                 else if (wallet.Day >= miner3Day)
+                {
                     minerTier = 2;
+
+                    if (highersMinerTier != minerTier)
+                        wasHighestTierBought = false;
+
+                    highersMinerTier = minerTier;
+                }
                 else if (wallet.Day >= miner2Day)
+                {
                     minerTier = 1;
+
+                    if (highersMinerTier != minerTier)
+                        wasHighestTierBought = false;
+
+                    highersMinerTier = minerTier;
+                }
                 else
                     minerTier = 0;
 
                 try
                 {
                     wallet.AdvanceOneDay(minerTier, 0);
+                    if (minerTier >= 0)
+                    nakupov++;
+
+                    if (!wasHighestTierBought)
+                    {
+                        if (wallet.Day <= daysAmount)
+                        {
+                            int minersAmount = wallet.MinersAmount;
+                            if (minersAmount == 0)
+                            {
+                                break;
+                            }
+                            if (wallet.GetMiner(wallet.MinersAmount - 1).PerDay >= PriceList.GetMiner(highersMinerTier).PerDay)
+                            {
+                                wasHighestTierBought = true;
+                            }
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+
+                    //if (i == daysAmount + 1 && wallet.MinersAmount == 0)
+                    //{
+                    //    successfulStrategy = false;
+                    //    break;
+                    //}
                 }
                 catch (Exception exception)
                 {
@@ -103,6 +170,8 @@ namespace Broker
 
                 //ShowStats();
             }
+
+            return wasHighestTierBought;
         }
 
         private void Reset()

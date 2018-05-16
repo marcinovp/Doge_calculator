@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Penazenka
 {
-    class Miner
+    public class Miner
     {
         private const int LIFETIME = 30;
 

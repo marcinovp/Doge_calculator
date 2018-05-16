@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Penazenka
 {
-    static class PriceList
+    public static class PriceList
     {
         private static PriceTag[] priceList = new PriceTag[]
             {
