@@ -103,5 +103,10 @@ namespace Penazenka
             }
             return perDayTotal;
         }
+
+        public Miner GetMiner(int index)
+        {
+            return miners[index];
+        }
     }
 }
