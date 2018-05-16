@@ -21,19 +21,19 @@ namespace Penazenka
 
         public void AdvanceOneDay(int minerTierToBuy = -1, long cashOutAmount = 0)
         {
+            Withdraw(cashOutAmount);
+
+            BuyMiners(minerTierToBuy);
+
             int minersCount = miners.Count;
             for (int i = 0; i < minersCount; i++)
             {
                 Balance += miners[i].PerDay;
             }
 
-            Withdraw(cashOutAmount);
-
             Day++;
 
             RemoveOverdueMiners();
-
-            BuyMiners(minerTierToBuy);
         }
 
         public void Withdraw(long amount)
@@ -76,7 +76,7 @@ namespace Penazenka
             //miners.RemoveAll((x) => Day >= x.EndingDay);
             for (int i = miners.Count - 1; i >= 0; i--)
             {
-                if (miners[i].EndingDay <= Day)
+                if (Day >= miners[i].EndingDay)
                     miners.RemoveAt(i);
             }
         }

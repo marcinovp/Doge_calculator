@@ -22,7 +22,7 @@ namespace Broker
         private int[] bestSchema;
         private int daysAmount;
         private int iterationCounter;
-        private int startingMinerPerDay;
+        private long startingMinerPerDay;
 
         private async void StartButton_Click(object sender, EventArgs e)
         {
@@ -177,7 +177,7 @@ namespace Broker
         private void Reset()
         {
             daysAmount = int.Parse(daysCountBox.Text);
-            startingMinerPerDay = int.Parse(startMinerBox.Text);
+            startingMinerPerDay = long.Parse(startMinerBox.Text);
             bestSchema = new int[] { -1, -1, -1};
             bestEarning = 0;
             iterationCounter = 0;
