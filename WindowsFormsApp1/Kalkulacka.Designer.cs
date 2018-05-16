@@ -1,4 +1,4 @@
-﻿namespace WindowsFormsApp1
+﻿namespace DogeCalculator
 {
     partial class Kalkulacka
     {
