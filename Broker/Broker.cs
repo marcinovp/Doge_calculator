@@ -77,12 +77,15 @@ namespace Broker
         private bool SimulateStrategy(int miner2Day, int miner3Day, int miner4Day)
         {
             Wallet wallet = new Wallet();
-            int highersMinerTier = 0;
+
+            int highestMinerDay = 0;
+            if (miner4Day < daysAmount + 1) highestMinerDay = miner4Day;
+            else if (miner3Day < daysAmount + 1) highestMinerDay = miner3Day;
+            else if (miner2Day < daysAmount + 1) highestMinerDay = miner2Day;
 
             //if the highest tier miner is never bought (strategy tries to buy it too early) it is not a successful strategy
             //starting with tier 0, default set to true
-            bool wasHighestTierBought = true;
-            int nakupov = 0;
+            bool wasHighestTierBought = false;
 
             if (wallet.Day == 0)
                 wallet.BuyMiner(0, startingMinerPerDay);
@@ -91,33 +94,20 @@ namespace Broker
             {
                 int minerTier = -1;
                 if (wallet.Day > daysAmount)
+                {
                     minerTier = -1;
+                }
                 else if (wallet.Day >= miner4Day)
                 {
                     minerTier = 3;
-
-                    if (highersMinerTier != minerTier)
-                        wasHighestTierBought = false;
-
-                    highersMinerTier = minerTier;
                 }
                 else if (wallet.Day >= miner3Day)
                 {
                     minerTier = 2;
-
-                    if (highersMinerTier != minerTier)
-                        wasHighestTierBought = false;
-
-                    highersMinerTier = minerTier;
                 }
                 else if (wallet.Day >= miner2Day)
                 {
                     minerTier = 1;
-
-                    if (highersMinerTier != minerTier)
-                        wasHighestTierBought = false;
-
-                    highersMinerTier = minerTier;
                 }
                 else
                     minerTier = 0;
@@ -125,19 +115,15 @@ namespace Broker
                 try
                 {
                     wallet.AdvanceOneDay(minerTier, 0);
-                    if (minerTier >= 0)
-                    nakupov++;
 
                     if (!wasHighestTierBought)
                     {
-                        if (wallet.Day <= daysAmount)
+                        int minersAmount = wallet.MinersAmount;
+
+                        if (minersAmount > 0)
                         {
-                            int minersAmount = wallet.MinersAmount;
-                            if (minersAmount == 0)
-                            {
-                                break;
-                            }
-                            if (wallet.GetMiner(wallet.MinersAmount - 1).PerDay >= PriceList.GetMiner(highersMinerTier).PerDay)
+                            if (wallet.Day >= highestMinerDay &&
+                                wallet.GetMiner(minersAmount - 1).ActivationDay >= highestMinerDay)
                             {
                                 wasHighestTierBought = true;
                             }
@@ -147,12 +133,6 @@ namespace Broker
                             break;
                         }
                     }
-
-                    //if (i == daysAmount + 1 && wallet.MinersAmount == 0)
-                    //{
-                    //    successfulStrategy = false;
-                    //    break;
-                    //}
                 }
                 catch (Exception exception)
                 {
